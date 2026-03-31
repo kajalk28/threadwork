@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { useState, useMemo, useRef, useEffect } from "react";
-import { useState, useMemo, useRef, useEffect } from "react";
 
 const C = {
   bg: "#f7f7f5", card: "#fff", green: "#5a8a5e", greenLight: "#d4e4d4", greenPale: "#e8f0e8",
@@ -96,7 +95,6 @@ const SearchBar = ({ value, onChange, placeholder="Search here ..." }) => (
   </div>
 );
 
-// ─── DATA ───
 const INIT_POSTS = [
   { id:1, user:"mariadesigns", category:"collab", tags:"Artist", body:"hello! I am an artist looking for some experience designing book covers. Is there anyone here who has written a manuscript, short story collection, poetry anthology, etc. that would like to work with me? It could be great for both our portfolios!", replies:[
     { user:"alexwriter", text:"hi! I wrote a short story and was looking for someone to work with to create cover art!! I also wanted to work on making a graphic novel next, would you like to join my project? DM me and I can add you!" },
@@ -179,7 +177,7 @@ const MSGS_LIST = [
   { id:7, name:"Sarah I.", preview:"loved your portfolio! especially the watercolor series", time:"2d" },
 ];
 
-const PINNED = [{ name:"Maria D.", id:1 }, { name:"Jake C.", id:2 }, { name:"Sam E.", id:3 }, { name:"Priya F.", id:4 }];
+const PINNED = [{ name:"Maria D.", id:1 },{ name:"Jake C.", id:2 },{ name:"Sam E.", id:3 },{ name:"Priya F.", id:4 }];
 
 const STATUS_COLORS = {
   "Under Review":{ bg:"#fff3e0", text:"#e65100" },
@@ -188,7 +186,6 @@ const STATUS_COLORS = {
   "Not Selected":{ bg:"#fce4ec", text:"#c62828" },
 };
 
-// ─── IMAGE PICKER ───
 const ImagePicker = ({ images, setImages }) => {
   const fileRef = useRef(null);
   const addImage = e => {
@@ -225,7 +222,6 @@ const ImagePicker = ({ images, setImages }) => {
   );
 };
 
-// ─── POST CARD (with edit, reply, images) ───
 const PostCard = ({ post, onEdit, onReply }) => {
   const [show, setShow] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -306,7 +302,6 @@ const PostCard = ({ post, onEdit, onReply }) => {
   );
 };
 
-// ─── EDIT POST ───
 const EditPost = ({ post, onClose, onSave }) => {
   const [cat, setCat] = useState(post.category);
   const [tags, setTags] = useState(post.tags);
@@ -337,7 +332,6 @@ const EditPost = ({ post, onClose, onSave }) => {
   );
 };
 
-// ─── CREATE POST ───
 const CreatePost = ({ onClose, onSubmit }) => {
   const [cat, setCat] = useState("collab");
   const [tags, setTags] = useState("");
@@ -368,8 +362,7 @@ const CreatePost = ({ onClose, onSubmit }) => {
   );
 };
 
-// ─── POST JOB (verified companies) ───
-const PostJob = ({ onClose, onPost, showToast }) => {
+const PostJob = ({ onClose, onPost }) => {
   const [step, setStep] = useState("verify");
   const [code, setCode] = useState("");
   const [compName, setCompName] = useState("");
@@ -382,22 +375,14 @@ const PostJob = ({ onClose, onPost, showToast }) => {
   const [quals, setQuals] = useState("");
   const [nice, setNice] = useState("");
   const [questions, setQuestions] = useState(["",""]);
-
   const addQ = () => setQuestions(p=>[...p,""]);
   const removeQ = i => setQuestions(p=>p.filter((_,idx)=>idx!==i));
   const updateQ = (i,v) => setQuestions(p=>p.map((q,idx)=>idx===i?v:q));
-
   const submitJob = () => {
     if(!jobTitle||!desc) return;
-    onPost({
-      id:Date.now(), company:compName||"Your Company", position:jobTitle, dept:dept||"General",
-      location:loc||"Remote", type:jType||"Full-time", desc,
-      qualifications:quals, desired:nice,
-      questions: questions.filter(q=>q.trim()),
-    });
+    onPost({ id:Date.now(), company:compName||"Your Company", position:jobTitle, dept:dept||"General", location:loc||"Remote", type:jType||"Full-time", desc, qualifications:quals, desired:nice, questions:questions.filter(q=>q.trim()) });
     onClose();
   };
-
   return (
     <Modal title="Post a Job" onClose={onClose}>
       {step === "verify" && (
@@ -410,10 +395,8 @@ const PostJob = ({ onClose, onPost, showToast }) => {
           <Input label="Company Name" value={compName} onChange={setCompName} placeholder="Your company name"/>
           <Input label="Company Email" value={compEmail} onChange={setCompEmail} placeholder="you@company.com"/>
           <Input label="Verification Code" value={code} onChange={setCode} placeholder="Enter your code"/>
-          <p style={{ fontSize:11.5, color:C.textMuted, lineHeight:1.5, margin:"0 0 10px" }}>
-            Use code <strong>THREADWORK2026</strong> for this demo, or apply at threadwork.co/employers.
-          </p>
-          <Btn onClick={()=>{ if(code==="THREADWORK2026" && compName && compEmail) setStep("form"); else if(!code||code!=="THREADWORK2026") setStep("denied"); }} style={{ width:"100%" }}>Verify & Continue</Btn>
+          <p style={{ fontSize:11.5, color:C.textMuted, lineHeight:1.5, margin:"0 0 10px" }}>Use code <strong>THREADWORK2026</strong> for this demo, or apply at threadwork.co/employers.</p>
+          <Btn onClick={()=>{ if(code==="THREADWORK2026" && compName && compEmail) setStep("form"); else setStep("denied"); }} style={{ width:"100%" }}>Verify & Continue</Btn>
         </div>
       )}
       {step === "denied" && (
@@ -434,25 +417,19 @@ const PostJob = ({ onClose, onPost, showToast }) => {
           <Input label="Department" value={dept} onChange={setDept} placeholder="e.g. Production, Post-Production"/>
           <Input label="Location" value={loc} onChange={setLoc} placeholder="e.g. Boston, MA or Remote"/>
           <Input label="Employment Type" value={jType} onChange={setJType} placeholder="e.g. Full-time, Internship, Freelance"/>
-          <Input label="Job Description *" value={desc} onChange={setDesc} area placeholder="Describe the role, responsibilities, and what makes this opportunity exciting..."/>
+          <Input label="Job Description *" value={desc} onChange={setDesc} area placeholder="Describe the role..."/>
           <Input label="Required Qualifications (one per line)" value={quals} onChange={setQuals} area placeholder="e.g.\nAfter Effects proficiency\nStrong communication skills"/>
-          <Input label="Nice to Have (one per line)" value={nice} onChange={setNice} area placeholder="e.g.\nCinema 4D experience\nDegree in related field"/>
+          <Input label="Nice to Have (one per line)" value={nice} onChange={setNice} area placeholder="e.g.\nCinema 4D experience"/>
           <div style={{ height:1, background:C.border, margin:"8px 0 16px" }}/>
           <div style={{ fontSize:14, fontWeight:800, color:C.text, marginBottom:6 }}>Application Questions</div>
-          <p style={{ fontSize:12, color:C.textLight, marginBottom:12, lineHeight:1.5 }}>Add custom questions that applicants will answer when they apply. These help you find the right candidates.</p>
+          <p style={{ fontSize:12, color:C.textLight, marginBottom:12, lineHeight:1.5 }}>Add custom questions that applicants will answer when they apply.</p>
           {questions.map((q,i)=>(
             <div key={i} style={{ display:"flex", gap:8, marginBottom:8, alignItems:"flex-start" }}>
-              <div style={{ flex:1 }}>
-                <Input label={`Question ${i+1}`} value={q} onChange={v=>updateQ(i,v)} placeholder="e.g. Why are you excited about this role?"/>
-              </div>
-              {questions.length > 1 && (
-                <button onClick={()=>removeQ(i)} style={{ background:"none", border:"none", color:C.coral, cursor:"pointer", fontSize:18, marginTop:22, padding:4 }}>✕</button>
-              )}
+              <div style={{ flex:1 }}><Input label={`Question ${i+1}`} value={q} onChange={v=>updateQ(i,v)} placeholder="e.g. Why are you excited about this role?"/></div>
+              {questions.length > 1 && <button onClick={()=>removeQ(i)} style={{ background:"none", border:"none", color:C.coral, cursor:"pointer", fontSize:18, marginTop:22, padding:4 }}>✕</button>}
             </div>
           ))}
-          {questions.length < 5 && (
-            <button onClick={addQ} style={{ background:"none", border:`1px dashed ${C.border}`, borderRadius:10, padding:"8px 0", width:"100%", fontSize:12, color:C.navActive, cursor:"pointer", fontWeight:500, marginBottom:16 }}>+ Add Another Question</button>
-          )}
+          {questions.length < 5 && <button onClick={addQ} style={{ background:"none", border:`1px dashed ${C.border}`, borderRadius:10, padding:"8px 0", width:"100%", fontSize:12, color:C.navActive, cursor:"pointer", fontWeight:500, marginBottom:16 }}>+ Add Another Question</button>}
           <Btn onClick={submitJob} style={{ width:"100%" }}>Publish Job Listing</Btn>
         </div>
       )}
@@ -460,7 +437,6 @@ const PostJob = ({ onClose, onPost, showToast }) => {
   );
 };
 
-// ─── JOB APPLICATION (with custom questions) ───
 const JobApply = ({ job, onClose, onSubmit }) => {
   const [form, setForm] = useState({ name:"", email:"", portfolio:"", message:"" });
   const [answers, setAnswers] = useState((job.questions||[]).map(()=>""));
@@ -472,9 +448,7 @@ const JobApply = ({ job, onClose, onSubmit }) => {
       <div style={{ background:C.greenPale, borderRadius:12, padding:14, marginBottom:16 }}>
         <div style={{ fontWeight:700, fontSize:15, color:C.text }}>{job.company}</div>
         <div style={{ fontSize:13, color:C.coral, fontWeight:600, marginTop:2 }}>{job.position}</div>
-        <div style={{ fontSize:12, color:C.textLight, marginTop:6 }}>
-          <span style={{ marginRight:14 }}>📍 {job.location}</span><span>🕐 {job.type}</span>
-        </div>
+        <div style={{ fontSize:12, color:C.textLight, marginTop:6 }}><span style={{ marginRight:14 }}>📍 {job.location}</span><span>🕐 {job.type}</span></div>
       </div>
       <div style={{ fontSize:14, fontWeight:800, color:C.text, marginBottom:12 }}>Your Information</div>
       <Input label="Full Name *" value={form.name} onChange={v=>set("name",v)} placeholder="Your name"/>
@@ -504,7 +478,6 @@ const JobApply = ({ job, onClose, onSubmit }) => {
   );
 };
 
-// ─── JOB DETAIL PAGE ───
 const JobDetailPage = ({ job, onBack, onApply }) => (
   <div>
     <div style={{ display:"flex", alignItems:"center", gap:10, padding:"12px 14px", background:C.greenPale, borderBottom:`1px solid ${C.border}` }}>
@@ -530,7 +503,7 @@ const JobDetailPage = ({ job, onBack, onApply }) => (
         <div style={{ fontSize:13, fontWeight:700, color:C.text, marginBottom:6 }}>About This Role</div>
         <p style={{ fontSize:13, color:C.textLight, lineHeight:1.6, margin:0 }}>{job.desc}</p>
       </div>
-      <div style={{ background:C.card, borderRadius:14, padding:16, border:`1px solid ${C.border}`, marginBottom:14 }}>
+      {job.qualifications && <div style={{ background:C.card, borderRadius:14, padding:16, border:`1px solid ${C.border}`, marginBottom:14 }}>
         <div style={{ fontSize:13, fontWeight:700, color:C.text, marginBottom:6 }}>Required Qualifications</div>
         {job.qualifications.split("\n").map((q,i)=>(
           <div key={i} style={{ display:"flex", gap:8, marginBottom:6 }}>
@@ -538,8 +511,8 @@ const JobDetailPage = ({ job, onBack, onApply }) => (
             <span style={{ fontSize:13, color:C.textLight }}>{q}</span>
           </div>
         ))}
-      </div>
-      <div style={{ background:C.card, borderRadius:14, padding:16, border:`1px solid ${C.border}`, marginBottom:14 }}>
+      </div>}
+      {job.desired && <div style={{ background:C.card, borderRadius:14, padding:16, border:`1px solid ${C.border}`, marginBottom:14 }}>
         <div style={{ fontSize:13, fontWeight:700, color:C.text, marginBottom:6 }}>Nice to Have</div>
         {job.desired.split("\n").map((q,i)=>(
           <div key={i} style={{ display:"flex", gap:8, marginBottom:6 }}>
@@ -547,7 +520,7 @@ const JobDetailPage = ({ job, onBack, onApply }) => (
             <span style={{ fontSize:13, color:C.textLight }}>{q}</span>
           </div>
         ))}
-      </div>
+      </div>}
       {job.questions?.length > 0 && (
         <div style={{ background:C.card, borderRadius:14, padding:16, border:`1px solid ${C.border}`, marginBottom:14 }}>
           <div style={{ fontSize:13, fontWeight:700, color:C.text, marginBottom:6 }}>You'll Be Asked</div>
@@ -565,7 +538,6 @@ const JobDetailPage = ({ job, onBack, onApply }) => (
   </div>
 );
 
-// ─── APPLICATION PORTAL ───
 const MyApplications = ({ apps, onBack }) => (
   <div>
     <div style={{ display:"flex", alignItems:"center", gap:10, padding:"12px 14px", background:C.greenPale, borderBottom:`1px solid ${C.border}` }}>
@@ -612,7 +584,6 @@ const MyApplications = ({ apps, onBack }) => (
   </div>
 );
 
-// ─── CHAT VIEW ───
 const ChatView = ({ chatId, onBack }) => {
   const chat = CHAT_DATA[chatId];
   const [msgs, setMsgs] = useState(chat?.msgs || []);
@@ -655,11 +626,9 @@ const ChatView = ({ chatId, onBack }) => {
   );
 };
 
-// ─── PROFILE (with editable resume) ───
 const ProfilePage = ({ resume, setResume }) => {
   const [editingResume, setEditingResume] = useState(false);
   const [rForm, setRForm] = useState(resume);
-
   const SECTIONS = [
     { title:"Project Post", items:[
       { title:"'Rest Stop' — Short Film", desc:"Currently in development. Looking for collaborators — colorist, sound designer, and composer needed. DM if interested!" },
@@ -673,7 +642,6 @@ const ProfilePage = ({ resume, setResume }) => {
       { title:"Festival Submission Tracker", desc:"Spreadsheet template for tracking film festival deadlines and submissions" },
     ]},
   ];
-
   return (
     <div>
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 16px", background:C.greenPale }}>
@@ -688,7 +656,6 @@ const ProfilePage = ({ resume, setResume }) => {
         </div>
       </div>
       <div style={{ padding:"0 16px 16px" }}>
-        {/* Resume Section - Editable */}
         <div style={{ border:`1px solid ${C.border}`, borderRadius:14, padding:16, marginBottom:14, background:C.white }}>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
             <div style={{ fontSize:14, fontWeight:700, color:C.coral }}>Resume</div>
@@ -701,40 +668,23 @@ const ProfilePage = ({ resume, setResume }) => {
             <div>
               <Input label="Education" value={rForm.education} onChange={v=>setRForm(p=>({...p,education:v}))} area placeholder="Your education..."/>
               <Input label="Experience (one per line)" value={rForm.experience} onChange={v=>setRForm(p=>({...p,experience:v}))} area placeholder="Your experience..."/>
-              <Input label="Skills (comma separated)" value={rForm.skills} onChange={v=>setRForm(p=>({...p,skills:v}))} placeholder="e.g. Premiere Pro, DaVinci Resolve, Cinematography"/>
-              <Input label="Awards & Honors" value={rForm.awards} onChange={v=>setRForm(p=>({...p,awards:v}))} area placeholder="Any awards, festival selections, scholarships..."/>
+              <Input label="Skills (comma separated)" value={rForm.skills} onChange={v=>setRForm(p=>({...p,skills:v}))} placeholder="e.g. Premiere Pro, DaVinci Resolve"/>
+              <Input label="Awards & Honors" value={rForm.awards} onChange={v=>setRForm(p=>({...p,awards:v}))} area placeholder="Any awards, festivals..."/>
             </div>
           ) : (
             <div>
-              <div style={{ marginBottom:10 }}>
-                <div style={{ fontSize:13, fontWeight:700, color:C.text }}>Education</div>
-                <div style={{ fontSize:12.5, color:C.textLight, lineHeight:1.55, whiteSpace:"pre-line", marginTop:2 }}>{resume.education}</div>
-              </div>
-              <div style={{ marginBottom:10 }}>
-                <div style={{ fontSize:13, fontWeight:700, color:C.text }}>Experience</div>
-                <div style={{ fontSize:12.5, color:C.textLight, lineHeight:1.55, whiteSpace:"pre-line", marginTop:2 }}>{resume.experience}</div>
-              </div>
-              {resume.skills && <div style={{ marginBottom:10 }}>
-                <div style={{ fontSize:13, fontWeight:700, color:C.text }}>Skills</div>
-                <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginTop:4 }}>
-                  {resume.skills.split(",").map((s,i)=>s.trim()&&(
-                    <span key={i} style={{ background:C.greenPale, padding:"3px 10px", borderRadius:10, fontSize:12, color:C.green, fontWeight:500 }}>{s.trim()}</span>
-                  ))}
-                </div>
-              </div>}
-              {resume.awards && <div>
-                <div style={{ fontSize:13, fontWeight:700, color:C.text }}>Awards & Honors</div>
-                <div style={{ fontSize:12.5, color:C.textLight, lineHeight:1.55, whiteSpace:"pre-line", marginTop:2 }}>{resume.awards}</div>
-              </div>}
+              <div style={{ marginBottom:10 }}><div style={{ fontSize:13, fontWeight:700, color:C.text }}>Education</div><div style={{ fontSize:12.5, color:C.textLight, lineHeight:1.55, whiteSpace:"pre-line", marginTop:2 }}>{resume.education}</div></div>
+              <div style={{ marginBottom:10 }}><div style={{ fontSize:13, fontWeight:700, color:C.text }}>Experience</div><div style={{ fontSize:12.5, color:C.textLight, lineHeight:1.55, whiteSpace:"pre-line", marginTop:2 }}>{resume.experience}</div></div>
+              {resume.skills && <div style={{ marginBottom:10 }}><div style={{ fontSize:13, fontWeight:700, color:C.text }}>Skills</div><div style={{ display:"flex", flexWrap:"wrap", gap:6, marginTop:4 }}>{resume.skills.split(",").map((s,i)=>s.trim()&&(<span key={i} style={{ background:C.greenPale, padding:"3px 10px", borderRadius:10, fontSize:12, color:C.green, fontWeight:500 }}>{s.trim()}</span>))}</div></div>}
+              {resume.awards && <div><div style={{ fontSize:13, fontWeight:700, color:C.text }}>Awards & Honors</div><div style={{ fontSize:12.5, color:C.textLight, lineHeight:1.55, whiteSpace:"pre-line", marginTop:2 }}>{resume.awards}</div></div>}
             </div>
           )}
         </div>
-        {/* Other sections */}
         {SECTIONS.map((sec,i)=>(
-          <div key={i} style={{ border:`1px solid ${C.border}`, borderRadius:14, padding:16, marginBottom:14, background: i===2 ? C.greenPale : C.white }}>
+          <div key={i} style={{ border:`1px solid ${C.border}`, borderRadius:14, padding:16, marginBottom:14, background:i===2?C.greenPale:C.white }}>
             <div style={{ fontSize:14, fontWeight:700, color:C.coral, marginBottom:10 }}>{sec.title}</div>
             {sec.items.map((item,j)=>(
-              <div key={j} style={{ marginBottom: j<sec.items.length-1?12:0 }}>
+              <div key={j} style={{ marginBottom:j<sec.items.length-1?12:0 }}>
                 <div style={{ fontSize:13, fontWeight:700, color:C.text }}>{item.title}</div>
                 <div style={{ fontSize:12.5, color:C.textLight, lineHeight:1.55, whiteSpace:"pre-line", marginTop:2 }}>{item.desc}</div>
               </div>
@@ -746,7 +696,6 @@ const ProfilePage = ({ resume, setResume }) => {
   );
 };
 
-// ─── PAGES ───
 const HomePage = ({ posts, search, setSearch, onCreatePost, onEditPost, onReply }) => {
   const filtered = useMemo(()=>{
     if(!search.trim()) return posts;
@@ -769,10 +718,7 @@ const HomePage = ({ posts, search, setSearch, onCreatePost, onEditPost, onReply 
       <div style={{ padding:"0 16px" }}>
         <h3 style={{ fontSize:16, fontWeight:800, margin:"10px 0 12px", color:C.text }}>{search.trim() ? `Results for "${search}"` : "Recent Posts:"}</h3>
         {filtered.length === 0 ? (
-          <div style={{ textAlign:"center", padding:"40px 20px", color:C.textMuted }}>
-            <div style={{ fontSize:32, marginBottom:8 }}>🔍</div>
-            <div style={{ fontSize:14 }}>No posts matching "{search}"</div>
-          </div>
+          <div style={{ textAlign:"center", padding:"40px 20px", color:C.textMuted }}><div style={{ fontSize:32, marginBottom:8 }}>🔍</div><div style={{ fontSize:14 }}>No posts matching "{search}"</div></div>
         ) : filtered.map(p=> <PostCard key={p.id} post={p} onEdit={onEditPost} onReply={onReply}/> )}
       </div>
     </div>
@@ -802,10 +748,7 @@ const JobsPage = ({ jobs, search, setSearch, onApply, onPostJob, viewJob, setVie
       <div style={{ padding:"4px 16px" }}>
         <h3 style={{ fontSize:16, fontWeight:800, margin:"8px 0 12px", color:C.text }}>{search.trim() ? `Jobs matching "${search}"` : "JOBS:"}</h3>
         {filtered.length === 0 ? (
-          <div style={{ textAlign:"center", padding:"40px 20px", color:C.textMuted }}>
-            <div style={{ fontSize:32, marginBottom:8 }}>💼</div>
-            <div style={{ fontSize:14 }}>No jobs matching "{search}"</div>
-          </div>
+          <div style={{ textAlign:"center", padding:"40px 20px", color:C.textMuted }}><div style={{ fontSize:32, marginBottom:8 }}>💼</div><div style={{ fontSize:14 }}>No jobs matching "{search}"</div></div>
         ) : filtered.map(j=>(
           <div key={j.id} onClick={()=>setViewJob(j)} style={{ background:C.card, borderRadius:14, padding:16, marginBottom:14, border:`1px solid ${C.border}`, boxShadow:"0 1px 3px rgba(0,0,0,.04)", cursor:"pointer" }}>
             <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:10 }}>
@@ -835,11 +778,7 @@ const MessagesPage = ({ onOpenChat, msgSearch, setMsgSearch }) => {
       <div style={{ padding:"12px 16px" }}>
         <h3 style={{ fontSize:15, fontWeight:800, margin:"0 0 10px", color:C.text }}>Pinned:</h3>
         <div style={{ display:"flex", gap:18, marginBottom:16 }}>
-          {PINNED.map((p,i)=>(
-            <div key={i} style={{ textAlign:"center", cursor:"pointer" }} onClick={()=>onOpenChat(p.id)}>
-              <Av n={p.name} s={48}/><div style={{ fontSize:11, color:C.textLight, marginTop:4 }}>{p.name}</div>
-            </div>
-          ))}
+          {PINNED.map((p,i)=>(<div key={i} style={{ textAlign:"center", cursor:"pointer" }} onClick={()=>onOpenChat(p.id)}><Av n={p.name} s={48}/><div style={{ fontSize:11, color:C.textLight, marginTop:4 }}>{p.name}</div></div>))}
         </div>
         <h3 style={{ fontSize:15, fontWeight:800, margin:"0 0 10px", color:C.text }}>{msgSearch.trim() ? `Results for "${msgSearch}"` : "Recents:"}</h3>
         {filtered.length === 0 ? (
@@ -847,10 +786,7 @@ const MessagesPage = ({ onOpenChat, msgSearch, setMsgSearch }) => {
         ) : filtered.map(m=>(
           <div key={m.id} onClick={()=>onOpenChat(m.id)} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 10px", background:m.id%2===0?C.white:C.msgBg, borderRadius:10, marginBottom:4, cursor:"pointer" }}>
             <Av n={m.name} s={40}/>
-            <div style={{ flex:1, minWidth:0 }}>
-              <div style={{ fontWeight:m.unread?800:600, fontSize:13.5, color:C.text }}>{m.name}</div>
-              <div style={{ fontSize:12, color:C.textLight, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{m.preview}</div>
-            </div>
+            <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:m.unread?800:600, fontSize:13.5, color:C.text }}>{m.name}</div><div style={{ fontSize:12, color:C.textLight, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{m.preview}</div></div>
             <div style={{ fontSize:11, color:C.textMuted, flexShrink:0 }}>{m.time}</div>
             {m.unread && <div style={{ width:8, height:8, borderRadius:4, background:C.navActive, flexShrink:0 }}/>}
           </div>
@@ -860,7 +796,6 @@ const MessagesPage = ({ onOpenChat, msgSearch, setMsgSearch }) => {
   );
 };
 
-// ─── NAV ───
 const NAV = [
   { key:"home", label:"Home", icon:a=><svg width="22" height="22" viewBox="0 0 24 24" fill={a?C.navActive:"none"} stroke={a?C.navActive:C.textMuted} strokeWidth="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
   { key:"jobs", label:"Jobs", icon:a=><svg width="22" height="22" viewBox="0 0 24 24" fill={a?C.navActive:"none"} stroke={a?C.navActive:C.textMuted} strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> },
@@ -868,8 +803,7 @@ const NAV = [
   { key:"profile", label:"Profile", icon:a=><svg width="22" height="22" viewBox="0 0 24 24" fill={a?C.navActive:"none"} stroke={a?C.navActive:C.textMuted} strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> },
 ];
 
-// ─── APP ───
-export default function App() {
+function App() {
   const [tab, setTab] = useState("profile");
   const [posts, setPosts] = useState(INIT_POSTS);
   const [jobs, setJobs] = useState(INIT_JOBS);
@@ -884,42 +818,28 @@ export default function App() {
   const [viewJob, setViewJob] = useState(null);
   const [showMyApps, setShowMyApps] = useState(false);
   const [myApps, setMyApps] = useState([
-    { company:"Northlight Media", position:"Video Editor Intern", location:"Boston, MA", type:"Paid Internship", status:"Interview Scheduled", date:"Mar 12", note:"We loved your portfolio! We'd like to schedule a 30-min video call. Please check your email for available times." },
+    { company:"Northlight Media", position:"Video Editor Intern", location:"Boston, MA", type:"Paid Internship", status:"Interview Scheduled", date:"Mar 12", note:"We loved your portfolio! We'd like to schedule a 30-min video call." },
     { company:"Moonrise Pictures", position:"Production Assistant", location:"Brooklyn, NY", type:"Full-time, On-set", status:"Under Review", date:"Mar 18", note:null },
   ]);
   const [resume, setResume] = useState({
-    education: "B.A. Film & Media Studies and English — Northeastern University, 2026",
-    experience: "Writer, Producer, Assistant Director — 'Breaking Character' (2026)\nWriter, Director, Cinematographer — 'Girls Night' (2025)",
-    skills: "Premiere Pro, DaVinci Resolve, Cinematography, Screenwriting, Directing, Production Management",
-    awards: "BU Student Film Showcase Selection — 'Breaking Character' (2026)",
+    education:"B.A. Film & Media Studies and English — Northeastern University, 2026",
+    experience:"Writer, Producer, Assistant Director — 'Breaking Character' (2026)\nWriter, Director, Cinematographer — 'Girls Night' (2025)",
+    skills:"Premiere Pro, DaVinci Resolve, Cinematography, Screenwriting, Directing, Production Management",
+    awards:"BU Student Film Showcase Selection — 'Breaking Character' (2026)",
   });
   const [toast, setToast] = useState(null);
 
   const showToast = msg => { setToast(msg); setTimeout(()=>setToast(null), 2500); };
-
-  const handleApply = j => {
-    setViewJob(null);
-    setApplyJob(j);
-  };
-
+  const handleApply = j => { setViewJob(null); setApplyJob(j); };
   const handleSubmitApp = j => {
     setMyApps(prev=>[{ company:j.company, position:j.position, location:j.location, type:j.type, status:"Application Received", date:"Today", note:null }, ...prev]);
     showToast(`Applied to ${j.company}! 🎉`);
   };
-
+  const handleSaveEdit = updated => { setPosts(p=>p.map(post=> post.id===updated.id ? updated : post)); showToast("Post updated! ✏️"); };
+  const handlePostJob = job => { setJobs(p=>[job,...p]); showToast("Job listing published! 🎉"); };
   const handleReply = (postId, text) => {
     setPosts(p => p.map(post => post.id === postId ? { ...post, replies: [...(post.replies||[]), { user:"kajal_k", text }] } : post));
     showToast("Reply posted! 💬");
-  };
-
-  const handleSaveEdit = updated => {
-    setPosts(p=>p.map(post=> post.id===updated.id ? updated : post));
-    showToast("Post updated! ✏️");
-  };
-
-  const handlePostJob = job => {
-    setJobs(p=>[job,...p]);
-    showToast("Job listing published! 🎉");
   };
 
   if(openChat) {
@@ -937,7 +857,7 @@ export default function App() {
       {toast && <Toast msg={toast}/>}
       {showCreate && <CreatePost onClose={()=>setShowCreate(false)} onSubmit={p=>{ setPosts(prev=>[p,...prev]); showToast("Post published! 🎉"); }}/>}
       {editPost && <EditPost post={editPost} onClose={()=>setEditPost(null)} onSave={handleSaveEdit}/>}
-      {showPostJob && <PostJob onClose={()=>setShowPostJob(false)} onPost={handlePostJob} showToast={showToast}/>}
+      {showPostJob && <PostJob onClose={()=>setShowPostJob(false)} onPost={handlePostJob}/>}
       {applyJob && <JobApply job={applyJob} onClose={()=>setApplyJob(null)} onSubmit={handleSubmitApp}/>}
       <div style={{ flex:1, overflowY:"auto", paddingBottom:70 }}>
         {tab==="home" && <HomePage posts={posts} search={homeSearch} setSearch={setHomeSearch} onCreatePost={()=>setShowCreate(true)} onEditPost={p=>setEditPost(p)} onReply={handleReply}/>}
@@ -956,4 +876,5 @@ export default function App() {
     </div>
   );
 }
+
 ReactDOM.createRoot(document.getElementById('root')).render(<App />)
